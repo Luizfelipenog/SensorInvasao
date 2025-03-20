@@ -44,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Socket? _socket;
-  final String serverIp = '10.180.46.55'; //10.180.46.55
+  final String serverIp = '192.168.2.102'; //10.180.46.55 //192.168.2.102
   final int serverPort = 50000;
   StreamSubscription<int>? _proximitySubscription;
   bool _isProximityDetected = false;
