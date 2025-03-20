@@ -52,12 +52,29 @@ Este projeto é um aplicativo Android desenvolvido em Flutter que utiliza o sens
   - Contém os arquivos do app, incluindo o código-fonte e dependências
 
 ## 📸 Capturas de Tela
+### 1. **App Desligado**
 ![App desligado](img/app_off.jpg)
+A tela do aplicativo no estado desligado, aguardando para ser ativado.
+
+### 2. **App Ligado**
 ![App ligado](img/app_on.jpg)
+A interface do aplicativo com a funcionalidade ativada, monitorando o sensor de proximidade.
+
+### 3. **Captura de Imagem - Exemplo 1**
 ![Captura de imagem - Exemplo 1](img/captura.jpg)
+Imagem registrada quando o modo de segurança foi acionado. Esta imagem foi enviada ao servidor para análise.
+
+### 4. **Captura de Imagem - Exemplo 2**
 ![Captura de imagem - Exemplo 2](img/captura1.jpg)
-![Servidor Ligado](img/server_on.jpg)
-![Servidor Funções](img/servidorFunc.jpg)
+Outra captura de imagem quando o sensor de proximidade detectou algo, registrada e enviada ao servidor.
+
+### 5. **Servidor Ligado**
+![Servidor Ligado](img/servidorON.png)
+A interface do servidor mostrando que ele está ativo, aguardando ou processando as conexões do aplicativo.
+
+### 6. **Servidor Funções**
+![Servidor Funções](img/servidorFunc.png)
+A tela do servidor detalhando as funções que estão sendo executadas, como o processamento
 
 ## 📖 Explicação do Funcionamento
 1. O app monitora continuamente o sensor de proximidade.
