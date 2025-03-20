@@ -3,6 +3,7 @@ import pygame
 import os
 import threading
 import tkinter as tk
+import base64
 
 # Inicializa o pygame para tocar o som
 pygame.mixer.init()
@@ -49,55 +50,57 @@ def stop_alarm():
         print(f"❌ Erro ao parar o alarme: {e}")
 
 def receive_image(conn):
-    """Recebe a imagem e salva no servidor."""
+    """Recebe a string Base64 da imagem e salva como arquivo .jpg"""
     print("📥 Recebendo imagem...")
 
-    image_data = b""
+    base64_data = ""
     
     while True:
-        part = conn.recv(4096)  # Recebe os dados em partes
+        part = conn.recv(4096).decode('utf-8')  # Recebe partes da string Base64
         if not part:
             break
-        
-        # Verifica se encontramos o marcador "FIM_IMAGEM"
-        if b"FIM_IMAGEM" in part:
-            image_data += part.split(b"FIM_IMAGEM")[0]
+        if "FIM_IMAGEM" in part:
+            base64_data += part.split("FIM_IMAGEM")[0]  # Remove marcador
             break
-        image_data += part
-    
-    # Definindo o caminho para salvar a imagem
-    image_path = os.path.join(os.getcwd(), "captura.jpg")
+        base64_data += part
+
     try:
+        image_bytes = base64.b64decode(base64_data)
+        image_path = os.path.join(os.getcwd(), "captura.jpg")
+
         with open(image_path, "wb") as f:
-            f.write(image_data)
-        print(f"📸 Imagem salva como {image_path}")
+            f.write(image_bytes)
+        
+        print(f"📸 Imagem salva em {image_path}")
+        
+        # Responde ao cliente confirmando recebimento
+        conn.sendall(b"IMAGEM_RECEBIDA")
+
     except Exception as e:
         print(f"❌ Erro ao salvar a imagem: {e}")
 
 
 def handle_client(conn, addr):
-    """Lida com um cliente conectado (recebe alertas e imagens simultaneamente)."""
+    """Lida com um cliente recebendo ALERTAS e IMAGENS"""
     print(f"✅ Conexão estabelecida com {addr}")
     load_alarm_sound()
 
     try:
         while True:
-            data = conn.recv(1024)
+            data = conn.recv(1024).decode('utf-8').strip()
             if not data:
                 break
-            
-            message = data.decode('utf-8', errors='ignore').strip()
-            
-            if message == "ALERTA":
-                print("🚨 ALERTA RECEBIDO! Tocando som...")
+
+            if data == "ALERTA":
+                print("🚨 ALERTA RECEBIDO!")
                 play_alarm()
-            
-            elif message == "IMAGEM":
+
+            elif data == "IMAGEM":
                 print("📸 Iniciando recebimento da imagem...")
-                threading.Thread(target=receive_image, args=(conn,), daemon=True).start()
+                receive_image(conn)
 
     except Exception as e:
-        print(f"❌ Erro no cliente {addr}: {e}")
+        print(f"❌ Erro com cliente {addr}: {e}")
     finally:
         conn.close()
         print(f"🔌 Conexão encerrada com {addr}")

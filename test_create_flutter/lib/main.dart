@@ -44,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Socket? _socket;
-  final String serverIp = '192.168.2.102';
+  final String serverIp = '10.180.46.55'; //10.180.46.55
   final int serverPort = 50000;
   StreamSubscription<int>? _proximitySubscription;
   bool _isProximityDetected = false;
@@ -91,12 +91,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Inicializar câmera
   Future<void> _initializeCamera() async {
-    _cameraController =
-        CameraController(widget.frontCamera, ResolutionPreset.medium);
-    await _cameraController.initialize();
-  }
+      _cameraController =
+          CameraController(widget.frontCamera, ResolutionPreset.medium);
+      await _cameraController.initialize();
+    }
 
-  // Enviar imagem para o servidor
+    // Enviar imagem para o servidor
+    // Enviar imagem em Base64
   Future<void> _sendImageToServer(XFile picture) async {
     if (_socket == null) {
       debugPrint("⚠️ Erro: Sem conexão com o servidor.");
@@ -104,11 +105,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     try {
       List<int> imageBytes = await picture.readAsBytes();
-      _socket!.add(utf8.encode("IMAGEM")); // Envia um marcador para o servidor
+      String base64Image = base64Encode(imageBytes);
+
+      _socket!.writeln("IMAGEM"); // Indica que uma imagem será enviada
       await Future.delayed(Duration(milliseconds: 100)); // Pequeno delay
-      _socket!.add(imageBytes);
-      _socket!
-          .add(utf8.encode("FIM_IMAGEM")); // Envia o marcador de fim de imagem
+      _socket!.writeln(base64Image); // Envia a imagem codificada
+      _socket!.writeln("FIM_IMAGEM"); // Envia um marcador para indicar o fim
+
       debugPrint("📤 Imagem enviada ao servidor");
       setState(() {
         _status = "Imagem enviada com sucesso!";

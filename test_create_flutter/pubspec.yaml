@@ -20,8 +20,6 @@ dependencies:
 
   camera: ^0.10.5+9
 
-  http: ^0.14.0
-
 
 dev_dependencies:
   flutter_test:
